@@ -1,0 +1,196 @@
+﻿[ch2]
+base = 0x8040_0000
+step = 0
+cases = [
+    "00hello_world",
+    "01store_fault",
+    "02power",
+    "03priv_inst",
+    "04priv_csr",
+]
+
+[ch3]
+base = 0x8040_0000
+step = 0x0020_0000
+cases = [
+    "00hello_world",
+    "01store_fault",
+    "02power",
+    "03priv_inst",
+    "04priv_csr",
+    "05write_a",
+    "06write_b",
+    "07write_c",
+    "08power_3",
+    "09power_5",
+    "10power_7",
+    "11sleep",
+]
+
+[ch4]
+cases = [
+    "00hello_world",
+    "01store_fault",
+    "02power",
+    "03priv_inst",
+    "04priv_csr",
+    "05write_a",
+    "06write_b",
+    "07write_c",
+    "08power_3",
+    "09power_5",
+    "10power_7",
+    "11sleep",
+]
+
+[ch5]
+cases = [
+    "00hello_world",
+    "01store_fault",
+    "02power",
+    "03priv_inst",
+    "04priv_csr",
+    "12forktest",
+    "13forktree",
+    "14forktest2",
+    "15matrix",
+    "user_shell",
+    "initproc",
+]
+
+[ch6]
+cases = [
+    "00hello_world",
+    "01store_fault",
+    "02power",
+    "03priv_inst",
+    "04priv_csr",
+    "12forktest",
+    "13forktree",
+    "14forktest2",
+    "15matrix",
+    "user_shell",
+    "initproc",
+    "filetest_simple",
+    "cat_filea",
+]
+
+[ch7]
+cases = [
+    "00hello_world",
+    "01store_fault",
+    "02power",
+    "03priv_inst",
+    "04priv_csr",
+    "12forktest",
+    "13forktree",
+    "14forktest2",
+    "15matrix",
+    "user_shell",
+    "initproc",
+    "filetest_simple",
+    "cat_filea",
+    "sig_simple",
+    "sig_simple2",
+    "sig_ctrlc",
+    "sig_tests",
+]
+
+[ch8-seq]
+cases = [
+    "initproc",
+    "user_shell",
+    "page_test1",
+    "page_test2",
+    "page_test3",
+    "page_test4",
+    "page_test5",
+    "page_test6",
+    "page_test7"
+]
+
+[ch8-sjf]
+cases = [
+    "initproc",
+    "sjf1",
+    "sjf2",
+    "sjf3",
+    "sjf4",
+    "sjf5",
+    "sjftests"
+]
+
+[ch8-stcf]
+cases = [
+    "initproc",
+    "sjf1",
+    "sjf2",
+    "sjf3",
+    "sjf4",
+    "sjf5",
+    "sjftests"
+]
+
+[ch8-hrrn]
+cases = [
+    "initproc",
+    "sjf1",
+    "sjf2",
+    "sjf3",
+    "sjf4",
+    "sjf5",
+    "sjftests"
+]
+
+[ch8-stride]
+cases = [
+    "initproc",
+    "stride0",
+    "stride1",
+    "stride2",
+    "stride3",
+    "stride4",
+    "stride5",
+    "stridetests" 
+]
+
+[ch8-lottery]
+cases = [
+    "initproc",
+    "lottery0",
+    "lottery1",
+    "lottery2",
+    "lottery3",
+    "lottery4",
+    "lottery5",
+    "lotterytests"
+]
+
+[ch8-mlfq]
+cases = [
+    "initproc",
+    "mlfq1",
+    "mlfq2",
+    "mlfq3",
+    "mlfq4",
+    "mlfq5",
+    "mlfqtests"
+]
+
+[ch8-edf]
+cases = [
+    "initproc",
+    "edf0",
+    "edf1",
+    "edf2",
+    "edftests"
+]
+
+[ch8-rms]
+cases = [
+    "initproc",
+    "rms0",
+    "rms1",
+    "rms2",
+    "rmstests"
+]

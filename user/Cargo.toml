@@ -1,0 +1,22 @@
+[package]
+name = "user_lib"
+version = "0.0.1"
+edition = "2021"
+authors = ["YdrMaster <ydrml@hotmail.com>"]
+
+[dependencies]
+rcore-console = { path = "../console" }
+syscall = { path = "../syscall", features = ["user"] }
+customizable-buddy = "0.0.2"
+lazy_static = { version = "1.4.0", features = ["spin_no_std"] }
+
+[features]
+seq = []
+sjf = []
+stcf = []
+hrrn = []
+stride = []
+lottery = []
+edf = []
+rms = []
+mlfq = []

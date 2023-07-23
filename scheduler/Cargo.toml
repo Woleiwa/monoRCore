@@ -1,0 +1,27 @@
+[package]
+name = "rcore-scheduler"
+description = "Implement some of the schedule algorithm for monocore"
+version = "0.0.0"
+authors = ["Emily <1207666367@qq.com>"]
+repository = ""
+documentation = ""
+license = "WTFPL"
+readme = "README.md"
+keywords = ["rcore", "scheduler"]
+categories = ["no-std"]
+
+[dependencies]
+rcore-utils = { path = "../utils", optional = true }
+rand_chacha = { version = "0.3.1", default-features = false, optional = true}
+rand = { version = "0.8.0", default-features = false, optional = true}
+
+[features]
+seq = []
+sjf = []
+stcf = []
+hrrn = ["dep:rcore-utils"]
+stride = []
+lottery = ["dep:rand", "dep:rand_chacha"]
+edf = ["dep:rcore-utils"]
+rms = []
+mlfq = []
