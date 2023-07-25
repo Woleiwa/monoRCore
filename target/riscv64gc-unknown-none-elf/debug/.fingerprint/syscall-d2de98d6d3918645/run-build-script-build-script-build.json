@@ -1,1 +1,0 @@
-{"rustc":2601803382363436713,"features":"","target":0,"profile":0,"path":0,"deps":[[18253905462543936819,"build_script_build",false,7972143391412664672]],"local":[{"RerunIfChanged":{"output":"riscv64gc-unknown-none-elf/debug/build/syscall-d2de98d6d3918645/output","paths":["build.rs","src/syscall.h.in"]}}],"rustflags":[],"metadata":0,"config":0,"compile_kind":0}
