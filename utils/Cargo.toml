@@ -11,4 +11,4 @@ keywords = ["rcore", "utils"]
 categories = ["no-std"]
 
 [dependencies]
-riscv = "0.9"
+riscv = "0.10.1"

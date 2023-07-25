@@ -12,7 +12,7 @@ categories = ["no-std"]
 
 [dependencies]
 sbi-rt = { version = "0.0.2", features = ["legacy"] }
-riscv = "0.9"
+riscv = "0.10.1"
 rcore-utils = { path = "../utils" }
 
 [features]
