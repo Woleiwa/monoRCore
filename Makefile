@@ -1,7 +1,7 @@
 DOCKER_NAME ?= rust-os-camp-2022
 DIR := workplace
 .PHONY: docker build_docker
-
+SCHED = seq
 flag = 
 ifeq (${USER},1)
 	flag += --rebuild-user

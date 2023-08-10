@@ -1,5 +1,5 @@
 use core::marker::Copy;
-use core::cmp::{Ord};
+use core::cmp::Ord;
 use alloc::collections::{VecDeque, LinkedList, BTreeMap};
 use crate::Manage;
 use crate::Schedule;
