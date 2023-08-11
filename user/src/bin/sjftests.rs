@@ -3,7 +3,8 @@
 
 #[macro_use]
 extern crate user_lib;
-
+extern crate alloc;
+use alloc::string::String;
 static TESTS: &[&str] = &[
     "sjf1",
     "sjf2",
@@ -33,7 +34,7 @@ pub fn main() -> i32 {
         println!("{} Arrive at {}", test, start);
         let pid = fork();
         if pid == 0 {
-            exec_with_args(*test, (&(TIMES[i],String::from(test))) as *const _ as usize);
+            exec_with_args(*test, (&(TIMES[i],String::from(*test))) as *const _ as usize);
             panic!("unreachable!");
         }
         i += 1;
