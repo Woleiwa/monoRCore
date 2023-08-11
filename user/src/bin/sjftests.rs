@@ -34,7 +34,7 @@ pub fn main() -> i32 {
         println!("{} Arrive at {}", test, start);
         let pid = fork();
         if pid == 0 {
-            exec_with_args(*test, (&(TIMES[i],String::from(*test))) as *const _ as usize);
+            exec_with_args(*test, (&(TIMES[i],i)) as *const _ as usize);
             panic!("unreachable!");
         }
         i += 1;
