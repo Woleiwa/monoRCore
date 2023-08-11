@@ -1,0 +1,13 @@
+F:\monoRCore\monoRCore\target\debug\deps\quote-d310649069358998.rmeta: C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\lib.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\ext.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\format.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\ident_fragment.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\to_tokens.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\runtime.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\spanned.rs
+
+F:\monoRCore\monoRCore\target\debug\deps\libquote-d310649069358998.rlib: C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\lib.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\ext.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\format.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\ident_fragment.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\to_tokens.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\runtime.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\spanned.rs
+
+F:\monoRCore\monoRCore\target\debug\deps\quote-d310649069358998.d: C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\lib.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\ext.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\format.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\ident_fragment.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\to_tokens.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\runtime.rs C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\spanned.rs
+
+C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\lib.rs:
+C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\ext.rs:
+C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\format.rs:
+C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\ident_fragment.rs:
+C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\to_tokens.rs:
+C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\runtime.rs:
+C:\Users\ACER\.cargo\registry\src\github.com-1ecc6299db9ec823\quote-1.0.32\src\spanned.rs:

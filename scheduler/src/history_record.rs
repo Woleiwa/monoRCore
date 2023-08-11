@@ -34,7 +34,7 @@ impl Record for HistoryRecord {
 }
 
 pub struct HistoryRecordMap<HistoryRecord>{
-    map: HashMap<String,HistoryRecord>
+    map: HashMap<usize,HistoryRecord>
 }
 
 impl <HistoryRecord>HistoryRecordMap<HistoryRecord> {
@@ -45,12 +45,12 @@ impl <HistoryRecord>HistoryRecordMap<HistoryRecord> {
 
 impl <HistoryRecord>RecordMap<HistoryRecord> for HistoryRecordMap<HistoryRecord>{
     #[inline]
-    fn insert(&mut self, proc:String, record:HistoryRecord) {
+    fn insert(&mut self, proc:usize, record:HistoryRecord) {
         self.map.insert(proc, record);
     }
 
     #[inline]
-    fn get_record(&mut self, proc:String) ->Option<&mut HistoryRecord> {
+    fn get_record(&mut self, proc:usize) ->Option<&mut HistoryRecord> {
        return self.map.get_mut(&proc);
     }
 }

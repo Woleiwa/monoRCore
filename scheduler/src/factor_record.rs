@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use alloc::string::String;
+use alloc::collections:: BTreeMap;
 
 use crate::{Record, time_record_map::RecordMap};
 
@@ -43,23 +42,23 @@ impl Record for FactorRecord {
 }
 
 pub struct FactorRecordMap<FactorRecord>{
-    map: HashMap<String,FactorRecord>
+    map: BTreeMap<usize,FactorRecord>
 }
 
 impl <FactorRecord>FactorRecordMap<FactorRecord> {
     pub fn new()-> Self{
-        Self { map: HashMap::new() }
+        Self { map: BTreeMap::new() }
     }
 }
 
 impl <FactorRecord>RecordMap<FactorRecord> for FactorRecordMap<FactorRecord>{
     #[inline]
-    fn insert(&mut self, proc:String, record:FactorRecord) {
+    fn insert(&mut self, proc:usize, record:FactorRecord) {
         self.map.insert(proc, record);
     }
 
     #[inline]
-    fn get_record(&mut self, proc:String) ->Option<&mut FactorRecord> {
+    fn get_record(&mut self, proc:usize) ->Option<&mut FactorRecord> {
         return self.map.get_mut(&proc);
     }
 }
