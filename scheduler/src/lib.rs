@@ -1,14 +1,19 @@
 #![no_std]
 mod scheduler;
 mod manager;
+mod recorder;
+mod time_record_map;
 pub use scheduler::Schedule;
 pub use manager::Manage;
-
+pub use recorder::Record;
 extern crate alloc;
+extern crate std;
 
 mod syscall_args;
 mod args_handler;
 
+mod factor_record;
+mod history_record;
 #[cfg(feature = "seq")]
 mod default_manager;
 #[cfg(feature = "seq")]

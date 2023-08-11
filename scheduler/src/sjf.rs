@@ -5,7 +5,8 @@ use core::option::Option;
 use crate::Manage;
 use crate::Schedule;
 use crate::syscall_args::*;
-
+use factor_record;
+use history_record;
 
 struct SJFTaskBlock<I: Copy + Ord> {
     task_id: I,
@@ -35,16 +36,26 @@ impl<I: Copy + Ord> Eq for SJFTaskBlock<I> {}
 
 pub struct SJFManager<T, I: Copy + Ord> {
     tasks: BTreeMap<I, T>,
+    task_name: BTreeMap<I, String>,
     time_map: BTreeMap<I, usize>,
-    heap: BinaryHeap<SJFTaskBlock<I>> // max-heap, reverse Ord to get a min-heap
+    start_time: usize,
+    heap: BinaryHeap<SJFTaskBlock<I>>, // max-heap, reverse Ord to get a min-heap
+    history_record: HistoryRecordMap,
+    factor_record: FactorRecordMap,
+    record_type: bool,
 }
 
 impl<T, I: Copy + Ord> SJFManager<T, I> {
     pub fn new() -> Self {
         Self {
             tasks: BTreeMap::new(),
+            task_name: BTreeMap::new(),
             time_map: BTreeMap::new(),
-            heap: BinaryHeap::new()
+            start_time: 0,
+            heap: BinaryHeap::new(),
+            history_record: HistoryRecordMap::new(),
+            factor_record: FactorRecordMap::new(),
+            record_type: false,
         }
     }
 }
@@ -65,6 +76,7 @@ impl<T, I: Copy + Ord> Manage<T, I> for SJFManager<T, I>{
     fn delete(&mut self, id: I) {
         self.tasks.remove(&id);
         self.time_map.remove(&id);
+        self.task_name.remove(&id);
     }
 }
 
@@ -89,7 +101,16 @@ impl<T, I: Copy + Ord> Schedule<I> for SJFManager<T, I> {
     }
 
     fn update_exec(&mut self, id: I, args: &ExecArgs) {
-        self.time_map.insert(id, args.time);
+        
+        let record = match self.record_type{
+            true=>{self.factor_record.get_record(args.proc)}
+            false=>{self.history_record.get_record(args.proc)}
+        };
+        match record {
+            None => {self.time_map.insert(id, args.time);}
+            Some => {self.time_map.insert(id, record.get_time());}
+        }
+        self.task_name.insert(id, args.proc);
     }
 
     fn update_fork(&mut self, parent_id: I, child_id: I) {
@@ -100,7 +121,47 @@ impl<T, I: Copy + Ord> Schedule<I> for SJFManager<T, I> {
         self.time_map.insert(child_id, time_);
     }
 
-    fn update_sched_to(&mut self, id: I, time: usize) {}
-    fn update_suspend(&mut self, id: I, time: usize) {}
+    fn update_sched_to(&mut self, id: I, time: usize) {
+        self.start_time = time;
+    }
+    
+    fn update_suspend(&mut self, id: I, time: usize) {
+        let running_time = time - start_time;
+        let task_name = task_name.get(id);
+        let record = match self.record_type{
+            true=>{self.factor_record.get_record(task_name)}
+            false=>{self.history_record.get_record(task_name)}
+        };
+        
+        match record {
+            None => {
+                match self.record_type{
+                    true=>{
+                        let mut record = FactorRecord::new();
+                        record.update(running_time);
+                        self.factor_record.insert(task_name, running_time);
+                    }
+                    false=>{
+                        let mut record = HistoryRecord::new();
+                        record.update(running_time);
+                        self.history_record.insert(task_name, running_time);
+                    }
+                };
+            }
+            Some => {
+                match self.record_type{
+                    true=>{
+                        record.update(running_time);
+                        self.factor_record.insert(task_name, running_time);
+                    }
+                    false=>{
+                        record.update(running_time);
+                        self.history_record.insert(task_name, running_time);
+                    }
+                };
+            }
+        }
+    }
+
     fn update_sleep(&mut self, id: I) {}
 }
