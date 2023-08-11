@@ -15,7 +15,7 @@ impl FactorRecord {
         }
     }
 
-    pub fn set_facor(&mut self, new_factor:isize){
+    pub fn set_factor(&mut self, new_factor:isize){
         if new_factor <= 0 || new_factor > 100{
             panic!("Invalid factor!");
         }

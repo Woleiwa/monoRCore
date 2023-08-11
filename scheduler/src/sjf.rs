@@ -5,8 +5,9 @@ use core::option::Option;
 use crate::Manage;
 use crate::Schedule;
 use crate::syscall_args::*;
-use factor_record;
-use history_record;
+use alloc::string::String;
+use factor_record::{FactorRecord,FactorRecordMap};
+use history_record::{HistoryRecord,HistoryRecordMap};
 
 struct SJFTaskBlock<I: Copy + Ord> {
     task_id: I,
@@ -40,8 +41,8 @@ pub struct SJFManager<T, I: Copy + Ord> {
     time_map: BTreeMap<I, usize>,
     start_time: usize,
     heap: BinaryHeap<SJFTaskBlock<I>>, // max-heap, reverse Ord to get a min-heap
-    history_record: HistoryRecordMap,
-    factor_record: FactorRecordMap,
+    history_record: HistoryRecordMap<HistoryRecord>,
+    factor_record: FactorRecordMap<FactorRecord>,
     record_type: bool,
 }
 
@@ -108,7 +109,7 @@ impl<T, I: Copy + Ord> Schedule<I> for SJFManager<T, I> {
         };
         match record {
             None => {self.time_map.insert(id, args.time);}
-            Some => {self.time_map.insert(id, record.get_time());}
+            Some(record) => {self.time_map.insert(id, record.get_time());}
         }
         self.task_name.insert(id, args.proc);
     }
@@ -126,8 +127,8 @@ impl<T, I: Copy + Ord> Schedule<I> for SJFManager<T, I> {
     }
     
     fn update_suspend(&mut self, id: I, time: usize) {
-        let running_time = time - start_time;
-        let task_name = task_name.get(id);
+        let running_time = time - self.start_time;
+        let task_name = self.task_name.get(id);
         let record = match self.record_type{
             true=>{self.factor_record.get_record(task_name)}
             false=>{self.history_record.get_record(task_name)}
@@ -148,7 +149,7 @@ impl<T, I: Copy + Ord> Schedule<I> for SJFManager<T, I> {
                     }
                 };
             }
-            Some => {
+            Some(record) => {
                 match self.record_type{
                     true=>{
                         record.update(running_time);
