@@ -1,0 +1,13 @@
+/home/mesii/code/monoRCore/monoRCore/target/debug/deps/quote-f5e7230cb4cc8391.rmeta: /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/lib.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/ext.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/format.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/ident_fragment.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/to_tokens.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/runtime.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/spanned.rs
+
+/home/mesii/code/monoRCore/monoRCore/target/debug/deps/libquote-f5e7230cb4cc8391.rlib: /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/lib.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/ext.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/format.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/ident_fragment.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/to_tokens.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/runtime.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/spanned.rs
+
+/home/mesii/code/monoRCore/monoRCore/target/debug/deps/quote-f5e7230cb4cc8391.d: /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/lib.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/ext.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/format.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/ident_fragment.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/to_tokens.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/runtime.rs /home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/spanned.rs
+
+/home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/lib.rs:
+/home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/ext.rs:
+/home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/format.rs:
+/home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/ident_fragment.rs:
+/home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/to_tokens.rs:
+/home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/runtime.rs:
+/home/mesii/.cargo/registry/src/github.com-1ecc6299db9ec823/quote-1.0.32/src/spanned.rs:
