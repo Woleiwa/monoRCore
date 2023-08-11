@@ -132,6 +132,7 @@ impl<T, I: Copy + Ord> Schedule<I> for SJFManager<T, I> {
             true=>{self.factor_record.get_record(task_name)}
             false=>{self.history_record.get_record(task_name)}
         };
+        
         match record {
             None => {
                 match self.record_type{
