@@ -1,4 +1,0 @@
-cargo:rerun-if-changed=build.rs
-cargo:rerun-if-env-changed=LOG
-cargo:rerun-if-env-changed=APP_ASM
-cargo:rustc-link-arg=-T/home/mesii/code/monoRCore/monoRCore/target/riscv64gc-unknown-none-elf/debug/build/ch8-9ad4faed0b502d95/out/linker.ld
