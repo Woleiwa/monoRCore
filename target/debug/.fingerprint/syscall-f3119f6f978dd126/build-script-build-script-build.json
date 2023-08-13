@@ -1,1 +1,0 @@
-{"rustc":2601803382363436713,"features":"[\"kernel\", \"user\"]","target":427768481117760528,"profile":9251013656241001069,"path":6278130021309835695,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/syscall-f3119f6f978dd126/dep-build-script-build-script-build"}}],"rustflags":[],"metadata":396068302241104836,"config":2202906307356721367,"compile_kind":0}
