@@ -9,5 +9,6 @@ use user_lib::{sleep_noblock};
 pub fn main() -> i32 {
     println!("I am sjf2");
     sleep_noblock(100000);
+    println!("sjf2 end!");
     0
 }

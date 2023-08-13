@@ -1,23 +1,23 @@
-use alloc::string::String;
+
 
 #[cfg(feature = "seq")]
 pub struct ExecArgs;
 
 #[cfg(feature = "sjf")]
 pub struct ExecArgs {
-    pub proc: String,
+    pub proc: usize,
     pub time: usize
 }
 
 #[cfg(feature = "stcf")]
 pub struct ExecArgs {
-    pub proc: String,
+    pub proc: usize,
     pub total_time: isize
 }
 
 #[cfg(feature = "hrrn")]
 pub struct ExecArgs {
-    pub proc: String,
+    pub proc: usize,
     pub total_time: usize
 }
 

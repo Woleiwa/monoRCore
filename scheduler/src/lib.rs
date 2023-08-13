@@ -7,7 +7,6 @@ pub use scheduler::Schedule;
 pub use manager::Manage;
 pub use recorder::Record;
 extern crate alloc;
-extern crate std;
 
 mod syscall_args;
 mod args_handler;
