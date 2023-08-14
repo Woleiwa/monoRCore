@@ -1,4 +1,0 @@
-cargo:rerun-if-changed=build.rs
-cargo:rerun-if-env-changed=LOG
-cargo:rerun-if-env-changed=APP_ASM
-cargo:rustc-link-arg=-TF:\monoRCore\monoRCore\target\debug\build\ch8-0b0ed38ba8a25836\out\linker.ld
