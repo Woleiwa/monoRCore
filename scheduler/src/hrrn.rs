@@ -6,6 +6,11 @@ use crate::Manage;
 use crate::Schedule;
 use crate::syscall_args::*;
 use rcore_utils::get_time_ms;
+use factor_record::{FactorRecord, FactorRecordMap};
+use history_record::{HistoryRecord, HistoryRecordMap};
+use recorder::Record;
+use time_record_map::RecordMap;
+use core::convert::TryInto;
 
 struct HRRNTaskBlock<I: Copy + Ord> {
     task_id: I,
@@ -43,7 +48,13 @@ impl<I: Copy + Ord> HRRNTaskBlock<I> {
 pub struct HRRNManager<T, I: Copy + Ord> {
     tasks: BTreeMap<I, T>,
     info_map: BTreeMap<I, HRRNTaskBlock<I>>,
-    current: Option<I> // (id, st_time)
+    current: Option<I>, // (id, st_time)
+    task_name: BTreeMap<I, usize>,
+    running_time: BTreeMap<I, usize>,
+    start_time: usize,
+    history_record: HistoryRecordMap<HistoryRecord>,
+    factor_record: FactorRecordMap<FactorRecord>,
+    record_type: bool
 }
 
 impl<T, I: Copy + Ord> HRRNManager<T, I> {
@@ -51,7 +62,13 @@ impl<T, I: Copy + Ord> HRRNManager<T, I> {
         Self { 
             tasks: BTreeMap::new(),
             info_map: BTreeMap::new(),
-            current: None
+            current: None,
+            task_name: BTreeMap::new(),
+            running_time: BTreeMap::new(),
+            start_time: 0,
+            history_record: HistoryRecordMap::<HistoryRecord>::new(),
+            factor_record: FactorRecordMap::<FactorRecord>::new(),
+            record_type: false,
         }
     }
 }
@@ -87,6 +104,51 @@ impl<T, I: Copy + Ord> Manage<T, I> for HRRNManager<T, I> {
                 self.current = None
             }
         }
+        let task_name = self.task_name.get(&id);
+        match self.running_time.get(&id){
+            None=>{
+                return
+            }
+            Some(t)=>{
+                let run_time = *t;
+                match self.record_type {
+                    true => {
+                        let f_record = &mut self.factor_record;
+                        let record = f_record.get_record(*task_name);
+                        let new_record = match record {
+                            None => {
+                                let mut new_record = FactorRecord::new();
+                                new_record.update(run_time.try_into().unwrap());
+                                new_record.copy()
+                            }
+                            Some(cur_record) => {
+                                cur_record.update(run_time.try_into().unwrap());
+                                cur_record.copy()
+                            }
+                        };
+                        f_record.insert(*task_name, new_record);
+                    }
+                    false => {
+                        let h_record = &mut self.history_record;
+                        let record = h_record.get_record(*task_name);
+                        let new_record = match record {
+                            None => {
+                                let mut new_record = HistoryRecord::new();
+                                new_record.update(run_time.try_into().unwrap());
+                                new_record.copy()
+                            }
+                            Some(cur_record) => {
+                                cur_record.update(run_time.try_into().unwrap());
+                                cur_record.copy()
+                            }
+                        };
+                        h_record.insert(*task_name, new_record);
+                    }
+                };
+            }
+        }
+        self.task_name.remove(&id);
+        self.running_time.remove(&id)
     }
 }
 
@@ -136,6 +198,7 @@ impl<T, I: Copy + Ord> Schedule<I> for HRRNManager<T, I> {
     }
 
     fn update_sched_to(&mut self, id: I, time: usize) {
+        self.start_time = time;
         if let None = self.current {
             self.current = Some(id);
             let block = self.info_map.get_mut(&id).unwrap();
@@ -156,6 +219,18 @@ impl<T, I: Copy + Ord> Schedule<I> for HRRNManager<T, I> {
             let block = self.info_map.get_mut(&cur_id).unwrap();
             block.last_stop_time = time;
             block.is_ready = false;
+
+            let run_time = time - self.start_time;
+            let cur_time = match self.running_time.get(&id){
+                None=>{
+                    0
+                }
+                Some(t)=>{
+                    *t
+                }
+            };
+            let total = cur_time + run_time;
+            self.running_time.insert(id,total);
         } else {
             panic!("call suspend but current is none! ")
         }

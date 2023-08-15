@@ -140,6 +140,15 @@ impl<T, I: Copy + Ord> Schedule<I> for SJFManager<T, I> {
             None => isize::MAX as usize,
             Some(t) => *t,
         };
+        let proc =  self.task_name.get(&parent_id);
+        match proc{
+            Some(t) =>{
+                self.task_name.insert(child_id, *t);
+            }
+            None =>{
+
+            }
+        }
         self.time_map.insert(child_id, time_);
     }
 
