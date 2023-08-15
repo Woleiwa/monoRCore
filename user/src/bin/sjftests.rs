@@ -14,11 +14,11 @@ static TESTS: &[&str] = &[
 ];
 
 static TIMES: [usize;5] = [
+    1000,
     10000,
-    100000,
+    10000,
     3000,
-    1200,
-    1100,
+    1000,
 ];
 
 use user_lib::{exec_with_args, fork, sleep_noblock, get_time};
@@ -34,7 +34,24 @@ pub fn main() -> i32 {
         println!("{} Arrive at {}", test, start);
         let pid = fork();
         if pid == 0 {
-            exec_with_args(*test, (&(TIMES[i],i)) as *const _ as usize);
+            let name = i;
+            exec_with_args(*test, (&(TIMES[i],name)) as *const _ as usize);
+            panic!("unreachable!");
+        }
+        i += 1;
+    }
+    sleep_noblock(100000);
+    i = 0;
+    for test in TESTS { 
+        if i == 3 || i == 4{
+            sleep_noblock(1000);
+        }
+        let start = get_time();
+        println!("{} Arrive at {}", test, start);
+        let pid = fork();
+        if pid == 0 {
+            let name = i;
+            exec_with_args(*test, (&(TIMES[i],name)) as *const _ as usize);
             panic!("unreachable!");
         }
         i += 1;

@@ -24,7 +24,7 @@ pub fn main() -> i32 {
     println!("{}",c);
     let end = get_time();
     println!(
-        "time_msec = {}, delta = {}ms!",
+        "time_msec = {}, delta = {}ms! sjf3 ok!",
         end,
         end - start
     );

@@ -3,7 +3,7 @@
 
 #[macro_use]
 extern crate user_lib;
-use user_lib::{get_time};
+use user_lib::get_time;
 
 #[no_mangle]
 pub fn main() -> i32 {

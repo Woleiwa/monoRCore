@@ -10,6 +10,7 @@ use history_record::{HistoryRecord, HistoryRecordMap};
 use recorder::Record;
 use time_record_map::RecordMap;
 use core::convert::TryInto;
+use rcore_console:: println;
 struct STCFTaskBlock<I: Copy + Ord> {
     task_id: I,
     time_total: isize,
@@ -138,7 +139,7 @@ impl<T, I: Copy + Ord> Manage<T, I> for STCFManager<T, I>{
                         res
                     }
                 };
-                
+                println!("running time for {} is {}" , task_name, running_time );
                 match self.record_type {
                     true => {
                         let f_record = &mut self.factor_record;
@@ -154,6 +155,7 @@ impl<T, I: Copy + Ord> Manage<T, I> for STCFManager<T, I>{
                                 cur_record.copy()
                             }
                         };
+                        println!("new time for {} is {}", task_name, new_record.get_time());
                         f_record.insert(*task_name, new_record);
                     }
                     false => {
@@ -170,6 +172,7 @@ impl<T, I: Copy + Ord> Manage<T, I> for STCFManager<T, I>{
                                 cur_record.copy()
                             }
                         };
+                        println!("new time for {} is {}", task_name, new_record.get_time());
                         h_record.insert(*task_name, new_record);
                     }
                 };
@@ -208,11 +211,11 @@ impl<T, I: Copy + Ord> Schedule<I> for STCFManager<T, I> {
                 match record {
                     None => {
                         self.time_map.insert(id, (args.total_time, args.total_time));
-                        //println!("No record time for {}", args.proc);
+                        println!("No record time for {}", args.proc);
                     }
                     Some(record) => {
                         self.time_map.insert(id, (record.get_time().try_into().unwrap(),record.get_time().try_into().unwrap()));
-                        //println!("Record time for {} is {}", args.proc, record.get_time());
+                        println!("Record time for {} is {}", args.proc, record.get_time());
                     }
                 }
                 self.task_name.insert(id, args.proc);
@@ -222,9 +225,11 @@ impl<T, I: Copy + Ord> Schedule<I> for STCFManager<T, I> {
                 match record {
                     None => {
                         self.time_map.insert(id, (args.total_time, args.total_time));
+                        println!("No record time for {}", args.proc);
                     }
                     Some(record) => {
                         self.time_map.insert(id, (record.get_time().try_into().unwrap(),record.get_time().try_into().unwrap()));
+                        println!("Record time for {} is {}", args.proc, record.get_time());
                     }
                 }
                 self.task_name.insert(id, args.proc);

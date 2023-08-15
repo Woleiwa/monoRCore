@@ -17,6 +17,9 @@ docker:
 build_docker:
 	docker build -t ${DOCKER_NAME} .
 
+clean: 
+	rmdir target --ignore-fail-on-non-empty
+
 # for local ubuntu with zsh shell SHELL, need root for sudo
 ubuntu_local_setenv:
 	sudo apt-get update

@@ -3,6 +3,7 @@ use core::option::Option;
 use alloc::collections::BTreeMap;
 
 use crate::{Record, time_record_map::RecordMap};
+use rcore_console::println;
 pub struct HistoryRecord {
     exp_time: usize,
     exec_time: usize,
@@ -29,14 +30,16 @@ impl Record for HistoryRecord {
         if new_time <= 0 {
             return;
         }
+        println!("new time is {}", new_time);
         let new_exec_time = self.exec_time + 1;
         let total_time = (self.exec_time * self.exp_time + new_time ) / new_exec_time;
+        println!("new total_time is {}", total_time);
         self.exec_time =  new_exec_time;
         self.exp_time =  total_time;
     }
 
     fn get_time(&self) -> usize {
-        return self.exec_time;
+        return self.exp_time;
     }
 }
 

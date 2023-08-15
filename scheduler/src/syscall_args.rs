@@ -5,20 +5,20 @@ pub struct ExecArgs;
 
 #[cfg(feature = "sjf")]
 pub struct ExecArgs {
-    pub proc: usize,
-    pub time: usize
+    pub time: usize,
+    pub proc: usize
 }
 
 #[cfg(feature = "stcf")]
 pub struct ExecArgs {
-    pub proc: usize,
-    pub total_time: isize
+    pub total_time: isize,
+    pub proc: usize
 }
 
 #[cfg(feature = "hrrn")]
 pub struct ExecArgs {
-    pub proc: usize,
-    pub total_time: usize
+    pub total_time: usize,
+    pub proc: usize
 }
 
 #[cfg(feature = "stride")]

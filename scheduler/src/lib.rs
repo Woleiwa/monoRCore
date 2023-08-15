@@ -13,6 +13,10 @@ mod args_handler;
 
 mod factor_record;
 mod history_record;
+
+extern crate rcore_console;
+use rcore_console::log;
+pub use rcore_console::{print, println};
 #[cfg(feature = "seq")]
 mod default_manager;
 #[cfg(feature = "seq")]

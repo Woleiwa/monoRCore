@@ -11,6 +11,7 @@ keywords = ["rcore", "scheduler"]
 categories = ["no-std"]
 
 [dependencies]
+rcore-console = { path = "../console" }
 rcore-utils = { path = "../utils", optional = true }
 rand_chacha = { version = "0.3.1", default-features = false, optional = true}
 rand = { version = "0.8.0", default-features = false, optional = true}
