@@ -1,17 +1,16 @@
-use crate::syscall_args::*;
 use crate::Manage;
 use crate::Schedule;
+use crate::syscall_args::*;
 use alloc::collections::{BTreeMap, BinaryHeap};
 use core::cmp::{Ord, Ordering};
+use core::convert::TryInto;
 use core::marker::Copy;
 use core::option::Option;
 use factor_record::{FactorRecord, FactorRecordMap};
 use history_record::{HistoryRecord, HistoryRecordMap};
 use recorder::Record;
 use time_record_map::RecordMap;
-use core::convert::TryInto;
-//use rcore_console::log;
-//pub use rcore_console::println;
+use rcore_console::println;
 
 struct SJFTaskBlock<I: Copy + Ord> {
     task_id: I,
@@ -44,6 +43,7 @@ pub struct SJFManager<T, I: Copy + Ord> {
     time_map: BTreeMap<I, usize>,
     start_time: usize,
     heap: BinaryHeap<SJFTaskBlock<I>>, // max-heap, reverse Ord to get a min-heap
+    running_time: BTreeMap<I, usize>,
     history_record: HistoryRecordMap<HistoryRecord>,
     factor_record: FactorRecordMap<FactorRecord>,
     record_type: bool,
@@ -57,6 +57,7 @@ impl<T, I: Copy + Ord> SJFManager<T, I> {
             time_map: BTreeMap::new(),
             start_time: 0,
             heap: BinaryHeap::new(),
+            running_time: BTreeMap::new(),
             history_record: HistoryRecordMap::<HistoryRecord>::new(),
             factor_record: FactorRecordMap::<FactorRecord>::new(),
             record_type: false,
@@ -80,7 +81,56 @@ impl<T, I: Copy + Ord> Manage<T, I> for SJFManager<T, I> {
     fn delete(&mut self, id: I) {
         self.tasks.remove(&id);
         self.time_map.remove(&id);
-        self.task_name.remove(&id);
+        let task_name = self.task_name.get(&id);
+        match task_name {
+            None => {}
+            Some(task_name) => {
+                match self.running_time.get(&id) {
+                    None => {return;}
+                    Some(t) => {
+                        let run_time = *t;
+                        self.running_time.remove(&id);
+                        match self.record_type {
+                            true => {
+                                let f_record = &mut self.factor_record;
+                                let record = f_record.get_record(*task_name);
+                                let new_record = match record {
+                                    None => {
+                                        let mut new_record = FactorRecord::new();
+                                        new_record.update(run_time.try_into().unwrap());
+                                        new_record.copy()
+                                    }
+                                    Some(cur_record) => {
+                                        cur_record.update(run_time.try_into().unwrap());
+                                        cur_record.copy()
+                                    }
+                                };
+                                println!("new time for {} is {}", task_name, new_record.get_time());
+                                f_record.insert(*task_name, new_record);
+                            }
+                            false => {
+                                let h_record = &mut self.history_record;
+                                let record = h_record.get_record(*task_name);
+                                let new_record = match record {
+                                    None => {
+                                        let mut new_record = HistoryRecord::new();
+                                        new_record.update(run_time.try_into().unwrap());
+                                        new_record.copy()
+                                    }
+                                    Some(cur_record) => {
+                                        cur_record.update(run_time.try_into().unwrap());
+                                        cur_record.copy()
+                                    }
+                                };
+                                println!("new time for {} is {}", task_name, new_record.get_time());
+                                h_record.insert(*task_name, new_record);
+                            }
+                        };
+                    }
+                }
+                self.task_name.remove(&id);
+            }
+        }
     }
 }
 
@@ -111,11 +161,11 @@ impl<T, I: Copy + Ord> Schedule<I> for SJFManager<T, I> {
                 match record {
                     None => {
                         self.time_map.insert(id, args.time);
-                        //println!("No record time for {}", args.proc);
+                        println!("No record time for {}", args.proc);
                     }
                     Some(record) => {
                         self.time_map.insert(id, record.get_time().try_into().unwrap());
-                        //println!("Record time for {} is {}", args.proc, record.get_time());
+                        println!("Record time for {} is {}", args.proc, record.get_time());
                     }
                 }
                 self.task_name.insert(id, args.proc);
@@ -125,9 +175,11 @@ impl<T, I: Copy + Ord> Schedule<I> for SJFManager<T, I> {
                 match record {
                     None => {
                         self.time_map.insert(id, args.time);
+                        println!("No record time for {}", args.proc);
                     }
                     Some(record) => {
                         self.time_map.insert(id, record.get_time().try_into().unwrap());
+                        println!("Record time for {} is {}", args.proc, record.get_time());
                     }
                 }
                 self.task_name.insert(id, args.proc);
@@ -157,49 +209,13 @@ impl<T, I: Copy + Ord> Schedule<I> for SJFManager<T, I> {
     }
 
     fn update_suspend(&mut self, id: I, time: usize) {
-        let running_time = time - self.start_time;
-        let task_name = self.task_name.get(&id);
-        match task_name {
-            None => {
-                return;
-            }
-            Some(task_name) => {
-                match self.record_type {
-                    true => {
-                        let f_record = &mut self.factor_record;
-                        let mut record = f_record.get_record(*task_name);
-                        let new_record = match record {
-                            None => {
-                                let mut new_record = FactorRecord::new();
-                                new_record.update(running_time.try_into().unwrap());
-                                new_record.copy()
-                            }
-                            Some(cur_record) => {
-                                cur_record.update(running_time.try_into().unwrap());
-                                cur_record.copy()
-                            }
-                        };
-                        f_record.insert(*task_name, new_record);
-                    }
-                    false => {
-                        let h_record = &mut self.history_record;
-                        let mut record = h_record.get_record(*task_name);
-                        let new_record = match record {
-                            None => {
-                                let mut new_record = HistoryRecord::new();
-                                new_record.update(running_time.try_into().unwrap());
-                                new_record.copy()
-                            }
-                            Some(cur_record) => {
-                                cur_record.update(running_time.try_into().unwrap());
-                                cur_record.copy()
-                            }
-                        };
-                        h_record.insert(*task_name, new_record);
-                    }
-                };
-            }
-        }
+        let run_time = time - self.start_time;
+        let cur_time = match self.running_time.get(&id) {
+            None => 0,
+            Some(t) => *t,
+        };
+        let total = cur_time + run_time;
+        self.running_time.insert(id, total);
     }
 
     fn update_sleep(&mut self, id: I) {}

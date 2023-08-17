@@ -1,5 +1,5 @@
 use core::marker::PhantomData;
-
+use alloc::collections::BTreeMap;
 use crate::plugins::{handle_pagefault, Manage};
 use crate::frame_allocator::{FrameTracker, frame_check};
 use kernel_vm::{AddressSpace, VmMeta, PageManager, VPN, PPN};
@@ -28,7 +28,7 @@ impl<Meta: VmMeta, M: PageManager<Meta> + 'static> Manage<Meta, M> for LRUManage
        if let Some(vec) = self.queue.get_mut(&task_id) {
             vec.push_back((ppn, vpn, frame, flag));
         } else {
-            let mut tmp = ClockQueue::new();
+            let mut tmp = LruQueue::new();
             tmp.push_back((ppn, vpn, frame, flag));
             self.queue.insert(task_id, tmp);
         }
@@ -38,9 +38,9 @@ impl<Meta: VmMeta, M: PageManager<Meta> + 'static> Manage<Meta, M> for LRUManage
         where F: Fn(usize) -> &'static mut AddressSpace<Meta, M> {
         if !frame_check() {
             let memory_set = get_memory_set(task_id);
-            let queue = self.queue.get_mut(&task_id).unwrap();
-            assert!(queue.len() != 0);
-            let item = queue.work(memory_set);
+            let cur_queue = self.queue.get_mut(&task_id).unwrap();
+            assert!(cur_queue.len() != 0);
+            let item = cur_queue.work(memory_set);
             vec![(item.0, item.1, task_id)]
         } else {
             vec![]
@@ -54,10 +54,9 @@ impl<Meta: VmMeta, M: PageManager<Meta> + 'static> Manage<Meta, M> for LRUManage
     fn handle_time_interrupt<F>(&mut self, get_memory_set: &F) 
             where F: Fn(usize) -> &'static mut AddressSpace<Meta, M> {
         if !frame_check() {
-            let memory_set = get_memory_set(task_id);
-            for (key,value) in self.queue{
-                let vec = self.queue.get_mut(&key).unwrap;
-                vec.handle_clock_interrupt(memory_set);
+            for (key,cur_queue)in self.queue.iter_mut(){
+                let memory_set = get_memory_set(*key);
+                cur_queue.handle_clock_interrupt(memory_set);
             }
         }
     }

@@ -8,6 +8,7 @@ mod plugins;
 mod manager;
 mod frame_allocator;
 mod virt_frame_swapper;
+mod lru_queue;
 
 pub use plugins::Manage;
 pub use manager::PageFaultHandler;
@@ -45,3 +46,8 @@ pub use pff::PffManager as FrameManager;
 mod work_set;
 #[cfg(feature = "work-set")]
 pub use work_set::WorkSetManager as FrameManager;
+
+#[cfg(feature = "lru")]
+mod lru;
+#[cfg(feature = "lru")]
+pub use lru::LRUManager as FrameManager;

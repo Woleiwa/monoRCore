@@ -7,7 +7,7 @@ use crate::frame_allocator::FrameTracker;
 use crate::ACCESS_FLAG;
 
 pub struct LruQueue<Meta: VmMeta> {
-    pub inner: VecDeque<(PPN<Meta>, VPN<Meta>, FrameTracker, usize)>,
+    pub inner: VecDeque<(PPN<Meta>, VPN<Meta>, FrameTracker, u16)>,
 }
 
 impl <Meta: VmMeta> LruQueue<Meta> {
@@ -31,8 +31,8 @@ impl <Meta: VmMeta> LruQueue<Meta> {
         Self { inner: VecDeque::new()}
     }
 
-    pub fn push_back(&mut self, item: (PPN<Meta>, VPN<Meta>, FrameTracker,usize)){
-        Self.inner.push_back(item);
+    pub fn push_back(&mut self, item: (PPN<Meta>, VPN<Meta>, FrameTracker,u16)){
+        self.inner.push_back(item);
     }
 
     pub fn len(&self) -> usize{
@@ -42,20 +42,21 @@ impl <Meta: VmMeta> LruQueue<Meta> {
     pub fn work<M: PageManager<Meta>>(&mut self, memory_set: &mut AddressSpace<Meta, M>) -> (PPN<Meta>, VPN<Meta>) {
         let length = self.inner.len();
         for i in 0..length {
-            let (ppn,vpn,_,flag) = &self.inner[i];
-            let mut cur_flag = flag;
+            let (ppn,vpn,frame,flag) = &self.inner[i];
+            let cur_flag = *flag;
             let accessed = Self::has_accessed(memory_set,vpn);
-            if(accessed){
-                cur_flag |= (1 << 8); 
-            }
-            &self.inner.insert(i, (ppn,vpn,frame,cur_flag));
+            let cur_flag = match accessed{
+                true => { cur_flag | (1 << 8) },
+                false => { *flag }
+            };
+            self.inner[i].3 = cur_flag;
         }//update flags
 
         let mut index = 0;
         let (p,v,f,cur) = &self.inner[index];
         let mut minimum = cur;
         for i in 1..length {
-            let (ppn,vpn,_,flag) = &self.inner[i];
+            let (_ppn,_vpn,_,flag) = &self.inner[i];
             if minimum < flag {
                 minimum = flag;
                 index = i;
@@ -65,17 +66,18 @@ impl <Meta: VmMeta> LruQueue<Meta> {
         (ppn,vpn)
     }
 
-    pub fn handle_clock_interrupt(&mut self, memory_set: &mut AddressSpace<Meta, M>){
+    pub fn handle_clock_interrupt<M: PageManager<Meta>>(&mut self, memory_set: &mut AddressSpace<Meta, M>){
         let length = self.inner.len();
         for i in 0..length {
-            let (ppn,vpn,frame,flag) = &self.inner[i];
-            let mut cur_flag = flag;
-            cur_flag >>= 1;
+            let (_ppn,vpn,_frame,flag) = &self.inner[i];
+            let cur_flag = flag;
+            let cur_flag= cur_flag >> 1;
             let accessed = Self::has_accessed(memory_set,vpn);
-            if(accessed){
-                cur_flag |= (1 << 8); 
-            }
-            &self.inner.insert(i, (ppn,vpn,frame,cur_flag));
+            let cur_flag = match accessed{
+                true => { cur_flag | (1 << 8) },
+                false => { *flag }
+            };
+            self.inner[i].3 = cur_flag;
         }
     }
 }
