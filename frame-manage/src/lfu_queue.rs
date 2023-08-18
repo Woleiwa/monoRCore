@@ -6,11 +6,11 @@ use kernel_vm::{AddressSpace, VmMeta, PageManager, VPN, Pte, PPN};
 use crate::frame_allocator::FrameTracker;
 use crate::ACCESS_FLAG;
 
-pub struct LruQueue<Meta: VmMeta> {
+pub struct LfuQueue<Meta: VmMeta> {
     pub inner: VecDeque<(PPN<Meta>, VPN<Meta>, FrameTracker, u16)>,
 }
 
-impl <Meta: VmMeta> LruQueue<Meta> {
+impl <Meta: VmMeta> LfuQueue<Meta> {
     fn get_pte<M: PageManager<Meta>>(memory_set: &mut AddressSpace<Meta, M>, vpn: &VPN<Meta>) -> Option<Pte<Meta>> {
         memory_set.translate_to_pte(vpn.base())
     }
@@ -26,7 +26,7 @@ impl <Meta: VmMeta> LruQueue<Meta> {
     }
 }
 
-impl <Meta: VmMeta> LruQueue<Meta> {
+impl <Meta: VmMeta> LfuQueue<Meta> {
     pub fn new() -> Self {
         Self { inner: VecDeque::new()}
     }
@@ -45,8 +45,9 @@ impl <Meta: VmMeta> LruQueue<Meta> {
             let (ppn,vpn,frame,flag) = &self.inner[i];
             let cur_flag = *flag;
             let accessed = Self::has_accessed(memory_set,vpn);
+            Self::clear_accessed(memory_set, vpn);
             let cur_flag = match accessed{
-                true => { cur_flag | (1 << 8) },
+                true => { cur_flag + 1 },
                 false => { *flag }
             };
             self.inner[i].3 = cur_flag;
@@ -71,11 +72,10 @@ impl <Meta: VmMeta> LruQueue<Meta> {
         for i in 0..length {
             let (_ppn,vpn,_frame,flag) = &self.inner[i];
             let cur_flag = flag;
-            let cur_flag= cur_flag >> 1;
             let accessed = Self::has_accessed(memory_set,vpn);
             Self::clear_accessed(memory_set, vpn);
             let cur_flag = match accessed{
-                true => { cur_flag | (1 << 8) },
+                true => { cur_flag + 1 },
                 false => { *flag }
             };
             self.inner[i].3 = cur_flag;
