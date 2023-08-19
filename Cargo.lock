@@ -412,6 +412,8 @@ name = "rcore-frame-manage"
 version = "0.0.0"
 dependencies = [
  "kernel-vm",
+ "rand",
+ "rand_chacha",
  "rcore-utils",
 ]
 
