@@ -57,3 +57,8 @@ pub use lru::LRUManager as FrameManager;
 mod lfu;
 #[cfg(feature = "lfu")]
 pub use lfu::LFUManager as FrameManager;
+
+#[cfg(feature = "nru")]
+mod nru;
+#[cfg(feature = "nru")]
+pub use nru::NRUManager as FrameManager;
