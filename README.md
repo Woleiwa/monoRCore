@@ -26,6 +26,11 @@
             - [LRU替换算法](#lru%E6%9B%BF%E6%8D%A2%E7%AE%97%E6%B3%95)
             - [LFU替换算法](#lfu%E6%9B%BF%E6%8D%A2%E7%AE%97%E6%B3%95)
             - [NRU替换算法（已经根据wiki内容修正）](#nru%E6%9B%BF%E6%8D%A2%E7%AE%97%E6%B3%95%E5%B7%B2%E7%BB%8F%E6%A0%B9%E6%8D%AEwiki%E5%86%85%E5%AE%B9%E4%BF%AE%E6%AD%A3)
+    - [实现方式](#%E5%AE%9E%E7%8E%B0%E6%96%B9%E5%BC%8F)
+        - [时间记录](#%E6%97%B6%E9%97%B4%E8%AE%B0%E5%BD%95)
+            - [历史平均记录预测](#%E5%8E%86%E5%8F%B2%E5%B9%B3%E5%9D%87%E8%AE%B0%E5%BD%95%E9%A2%84%E6%B5%8B)
+            - [平滑系数记录预测](#%E5%B9%B3%E6%BB%91%E7%B3%BB%E6%95%B0%E8%AE%B0%E5%BD%95%E9%A2%84%E6%B5%8B)
+            - [具体运行流程](#%E5%85%B7%E4%BD%93%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B)
 
 <!-- /TOC -->
 
@@ -372,3 +377,171 @@ static TESTS: &[&str] = &[
 <li>not referenced, not modified
 </ol>
 尽管一个页面似乎不大可能被修改但是没被引用，但是因为我们的引用符会在时间中断发生时被修改为0，所以这种情况在算法中式存在的。NRU会随机从当前优先级最低的类中选取一个页面，将其替换。
+
+## 实现方式
+
+### 时间记录
+<p>抽象接口代码如下：
+
+```rust
+pub trait Record {
+    fn update(&mut self, new_time: usize); //更新记录时间
+
+    fn get_time(&self) -> usize; //获取预测时间
+}
+```
+```rust
+pub trait RecordMap<I> {
+    fn insert(&mut self, proc:usize, record:I);//插入时间记录
+
+    fn get_record(&mut self, proc:usize) ->Option<&mut I>;//获取时间记录
+}
+```
+record特征用来存储对应的时间记录，map是时间记录的查找表。（由于riscv不允许使用std库，所以无法实现哈希表存储，这里用一个usize类型来表示不同的程序的键值。）
+
+#### 历史平均记录预测
+数据结构如下
+```rust
+pub struct HistoryRecord {
+    exp_time: usize,
+    exec_time: usize,
+}
+```
+<p> exp_time表示预测时间，exec_time表示执行时间，每次运行后通过update函数进行更新，exec_time自增一次，exp_time通过之前的公式进行更新。
+
+#### 平滑系数记录预测
+数据结构如下
+```rust
+pub struct FactorRecord {
+    exp_time: usize,
+    factor: usize,
+}
+```
+factor用来表示平滑系数，当然实际的a = factor/100,所以factor的大小应该在（0，100）这个区间。
+
+#### 具体运行流程
+<ol>
+<li>在update_exec函数中，会根据ExecArgs中的proc参数来查找记录表中对应的时间记录，如果找到对应的时间记录就会在时间记录表中根据taskId插入对应的记录表，否则用用户自己设定的时间进行代替，并把taskId和proc的对应记录插入到对应记录表。
+<li>每次进行update_sched_to函数操作是，将scheduler中的start_time设置为当前的time。
+<li>进行update_suspend函数，用当前时间减去start_time就可以得到当前程序在这段时间运行的时间长度，并将这段时间长度加到当前任务的总运行时间上，就可以获得截止当前时间，该程序运行的时间。
+<li>在程序结束的时候会delete函数，将对应taskId的任务的运行时间来更新taskId对应的proc的时间记录。
+</ol>
+
+### 页面替换算法
+#### LRU替换算法
+```rust
+pub struct LFUManager<Meta:VmMeta,M:PageManager<Meta>> {
+    queue: BTreeMap<usize, LfuQueue<Meta>>,
+    manager: PhantomData<M>
+}
+```
+```rust
+pub struct LruQueue<Meta: VmMeta> {
+    pub inner: VecDeque<(PPN<Meta>, VPN<Meta>, FrameTracker, u16)>,
+}
+```
+<p>由于原来的页表项代码是在在在线仓库里，本人没有权限对其进行修改，这里实现的是一个近似的LRU替换算法。这里只用一个VecDeque来存储每个虚拟页表项对应的LRU flag，对于这个队列，有如下操作：
+
+```rust
+impl <Meta: VmMeta> LruQueue<Meta> {
+    fn get_pte<M: PageManager<Meta>>(memory_set: &mut AddressSpace<Meta, M>, vpn: &VPN<Meta>) -> Option<Pte<Meta>> {
+    }//获取对应页表项
+
+    fn has_accessed<M: PageManager<Meta>>(memory_set: &mut AddressSpace<Meta, M>, vpn: &VPN<Meta>) -> bool {
+    }//查看对应当前页表项的access位是否为1
+
+    fn clear_accessed<M: PageManager<Meta>>(memory_set: &mut AddressSpace<Meta, M>, vpn: &VPN<Meta>) {
+    }//清除页表项
+}
+
+impl <Meta: VmMeta> LruQueue<Meta> {
+
+    pub fn push_back(&mut self, item: (PPN<Meta>, VPN<Meta>, FrameTracker,u16)){
+    }//将新页表加入队列
+
+    pub fn len(&self) -> usize{
+    }//查看队列长度
+
+    pub fn work<M: PageManager<Meta>>(&mut self, memory_set: &mut AddressSpace<Meta, M>) -> (PPN<Meta>, VPN<Meta>) {
+    }//在发生缺页异常时进行工作，将要替换的页表项找出来
+
+    pub fn handle_clock_interrupt<M: PageManager<Meta>>(&mut self, memory_set: &mut AddressSpace<Meta, M>){
+    }//处理时钟异常
+}
+```
+<p>这里重点是两个函数，work和handle_clock_interrupt。在发生缺页中断时，会调用work函数，work函数会遍历所有页表项，先将其flag向右移动一位，并查看是否有页表项的accessd位为1，如果为1，就对这些页表项flag的最高位设置为1，并清除accessed位。更新之后会再遍历一次，找到flag最小的页表项，并删除。handle_clock_interrupt函数相当于work函数的第一次遍历，就不再介绍了。
+
+#### LFU替换算法
+
+具体实现和LRU比较类似，只是每次更新时是将falg位加一，具体不在赘述。
+
+#### NRU替换算法
+
+```rust
+pub struct NRUManager<Meta: VmMeta, M: PageManager<Meta>> {
+    queue: BTreeMap<usize, VecDeque<(PPN<Meta>, VPN<Meta>, FrameTracker)>>,
+    manager: PhantomData<M>,
+    rng: ChaCha20Rng,
+}
+
+impl<Meta: VmMeta,M: PageManager<Meta>> NRUManager<Meta,M> {
+    fn get_pte(
+        memory_set: &mut AddressSpace<Meta, M>,
+        vpn: &VPN<Meta>,
+    ) -> Option<Pte<Meta>> {
+    }//获取页表项
+
+    fn has_accessed(
+        memory_set: &mut AddressSpace<Meta, M>,
+        vpn: &VPN<Meta>,
+    ) -> bool {
+    }//accessed位是否为1
+
+    fn clear_accessed(
+        memory_set: &mut AddressSpace<Meta, M>,
+        vpn: &VPN<Meta>,
+    ) {
+    }//清除accessd位
+
+    fn get_accessed_dirty(
+        memory_set: &mut AddressSpace<Meta, M>,
+        vpn: &VPN<Meta>,
+    ) -> (bool, bool) {
+    }//获取accessed位和dirty位
+}
+
+impl<Meta: VmMeta, M: PageManager<Meta> + 'static> Manage<Meta, M> for NRUManager<Meta, M> {
+
+    fn handle_pagefault<F>(&mut self, get_memory_set: &F, vpn: VPN<Meta>, task_id: usize)
+    where
+        F: Fn(usize) -> &'static mut AddressSpace<Meta, M>,
+    {
+    }//处理页错误
+
+    fn insert_frame(
+        &mut self,
+        vpn: VPN<Meta>,
+        ppn: PPN<Meta>,
+        task_id: usize,
+        frame: FrameTracker,
+    ) {
+    }//插入页表项
+
+    fn work<F>(&mut self, get_memory_set: &F, task_id: usize) -> Vec<(PPN<Meta>, VPN<Meta>, usize)>
+    where
+        F: Fn(usize) -> &'static mut AddressSpace<Meta, M>,
+    {
+    }//在页表项时进行工作
+
+    fn clear_frames(&mut self, task_id: usize) {
+    }//清除对应任务的页表项
+
+    fn handle_time_interrupt<F>(&mut self, get_memory_set: &F)
+    where
+        F: Fn(usize) -> &'static mut AddressSpace<Meta, M>,
+    {
+    }//处理时钟中断
+}
+
+```
+<p>重点还是work和handle_time_interrupt函数，work函数会遍历所有页表项，根据当前页面的accessed位和dirty位来分类，并将页面在队列中的索引加入到对应分类的索引队列中。在遍历完后，会从优先级由低到高遍历所有的索引队列，如果队列的长度不为0，就从当前队列中选取一个进行删除，用随机数生成选取坐标，将其从索引队列中取出并替换对应的页表项。handle_time_interrupt会遍历所有的页表项并清除所有的accessed位。
