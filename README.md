@@ -35,6 +35,12 @@
             - [LRU替换算法](#lru%E6%9B%BF%E6%8D%A2%E7%AE%97%E6%B3%95)
             - [LFU替换算法](#lfu%E6%9B%BF%E6%8D%A2%E7%AE%97%E6%B3%95)
             - [NRU替换算法](#nru%E6%9B%BF%E6%8D%A2%E7%AE%97%E6%B3%95)
+    - [测试结果](#%E6%B5%8B%E8%AF%95%E7%BB%93%E6%9E%9C)
+        - [时间预测测试](#%E6%97%B6%E9%97%B4%E9%A2%84%E6%B5%8B%E6%B5%8B%E8%AF%95)
+        - [页面替换算法测算结果](#%E9%A1%B5%E9%9D%A2%E6%9B%BF%E6%8D%A2%E7%AE%97%E6%B3%95%E6%B5%8B%E7%AE%97%E7%BB%93%E6%9E%9C)
+            - [LRU](#lru)
+            - [LFU](#lfu)
+            - [NRU](#nru)
 
 <!-- /TOC -->
 
@@ -526,3 +532,72 @@ impl<Meta: VmMeta, M: PageManager<Meta> + 'static> Manage<Meta, M> for NRUManage
 
 ```
 <p>重点还是work和handle_time_interrupt函数，work函数会遍历所有页表项，根据当前页面的accessed位和dirty位来分类，并将页面在队列中的索引加入到对应分类的索引队列中。在遍历完后，会从优先级由低到高遍历所有的索引队列，如果队列的长度不为0，就从当前队列中选取一个进行删除，用随机数生成选取坐标，将其从索引队列中取出并替换对应的页表项。handle_time_interrupt会遍历所有的页表项并清除所有的accessed位。
+
+## 测试结果
+### 时间预测测试
+<img src="img/sjf1.png">
+<img src="img/sjf2.png">
+我们可以看到，第一遍运行开始的时候，调度器内部对于这些任务是没有运行预测时间的，在运行结束后会将运行时间进行更新。第二遍运行时就可以看到初始运行预测时间，运行完之后依旧会进行更新。
+运行时间测算出来的和程序内部自己打印出来的不一样的原因主要有如下两点：
+<ol>
+<li>程序内部打印运行时间有时间消耗，这部分没有算到程序自己的测算的运行时间内。
+<li>程序进行调度转换的时间也被计算到了测算到了调度器的程序的时间记录内。
+</ol>
+
+### 页面替换算法测算结果
+#### LRU 
+<img src="img/lru1.png">
+<img src="img/lru2.png">
+
+#### LFU
+<img src="img/lfu1.png">
+<img src="img/lfu2.png">
+
+#### NRU
+<img src="img/nru1.png">
+<img src="img/nru2.png">
+
+<p>测试结果表格如下：
+
+<table style="width:70%;padding-left:15%">
+<tr>
+<th>算法</th>
+<th>test1</th>
+<th>test2</th>
+<th>test3</th>
+<th>test4</th>
+<th>test5</th>
+<th>test6</th>
+<th>test7</th>
+</tr>
+<tr>
+<td>LRU</td>
+<td>100</td>
+<td>402</td>
+<td>100</td>
+<td>418</td>
+<td>410</td>
+<td>3280</td>
+<td>3714</td>
+</tr>
+<tr>
+<td>LFU</td>
+<td>100</td>
+<td>402</td>
+<td>100</td>
+<td>414</td>
+<td>402</td>
+<td>12853</td>
+<td>8169</td>
+</tr>
+<tr>
+<td>NRU</td>
+<td>100</td>
+<td>401</td>
+<td>100</td>
+<td>419</td>
+<td>401</td>
+<td>13812</td>
+<td>7856</td>
+</tr>
+<table>
