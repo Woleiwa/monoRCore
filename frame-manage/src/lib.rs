@@ -58,7 +58,7 @@ mod lfu;
 #[cfg(feature = "lfu")]
 pub use lfu::LFUManager as FrameManager;
 
-#[cfg(feature = "nru")]
+#[cfg(feature = "nru")] 
 extern crate rand;
 #[cfg(feature = "nru")]
 extern crate rand_chacha;
