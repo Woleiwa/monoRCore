@@ -201,6 +201,15 @@ impl<T, I: Copy + Ord> Schedule<I> for SJFManager<T, I> {
                 
             }
         }
+        let run_time = self.running_time.get(&parent_id);
+        match run_time{
+            Some(t) =>{
+                self.running_time.insert(child_id, *t);
+            }
+            None =>{
+                
+            }
+        }
         self.time_map.insert(child_id, time_);
     }
 

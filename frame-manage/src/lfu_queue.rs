@@ -56,12 +56,14 @@ impl <Meta: VmMeta> LfuQueue<Meta> {
         let mut index = 0;
         let (p,v,f,cur) = &self.inner[index];
         let mut minimum = cur;
+        self.inner[0].3 = 0;
         for i in 1..length {
             let (_ppn,_vpn,_,flag) = &self.inner[i];
             if minimum < flag {
                 minimum = flag;
                 index = i;
             }
+            self.inner[i].3 = 0;
         }//find the minimum and remove it
         let (ppn,vpn,_,_) = self.inner.remove(index).unwrap();
         (ppn,vpn)
